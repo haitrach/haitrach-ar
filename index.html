@@ -1,36 +1,51 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>AR Hải Trạch</title>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.4/dist/mindar-image-three.prod.js"></script>
+    <meta charset="UTF-8" />
+    <title>AR Namecard Hải Trạch</title>
     <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.4/dist/mindar-image-three.prod.js"></script>
     <style>
-      body { margin: 0; overflow: hidden; }
-      canvas { width: 100%; height: 100%; display: block; }
+      body {
+        margin: 0;
+        overflow: hidden;
+      }
+      canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
     </style>
   </head>
   <body>
     <script type="module">
-      import {loadGLTF} from 'https://cdn.jsdelivr.net/npm/mind-ar@1.1.4/dist/three-utils/loaders.js';
-
       const mindarThree = new window.MINDAR.IMAGE.MindARThree({
         container: document.body,
-        imageTargetSrc: './haitrach.mind',
+        imageTargetSrc: './targets.mind', // Đảm bảo file này tên đúng
       });
 
-      const {renderer, scene, camera} = mindarThree;
+      const { renderer, scene, camera } = mindarThree;
       const anchor = mindarThree.addAnchor(0);
 
-      const start = async () => {
-        const gltf = await loadGLTF('./assets/model.glb'); // ← thay bằng ảnh nếu không có 3D
-        gltf.scene.scale.set(0.05, 0.05, 0.05);
-        anchor.group.add(gltf.scene);
+      const textureLoader = new THREE.TextureLoader();
+      const texture = textureLoader.load('./overlay.jpg'); // Hình overlay hiển thị AR
 
+      const geometry = new THREE.PlaneGeometry(1, 0.6); // Điều chỉnh tỷ lệ ảnh
+      const material = new THREE.MeshBasicMaterial({
+        map: texture,
+        transparent: true,
+      });
+
+      const plane = new THREE.Mesh(geometry, material);
+      anchor.group.add(plane);
+
+      const start = async () => {
         await mindarThree.start();
         renderer.setAnimationLoop(() => {
           renderer.render(scene, camera);
         });
       };
+
       start();
     </script>
   </body>
