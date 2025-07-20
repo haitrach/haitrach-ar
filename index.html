@@ -1,52 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta charset="UTF-8" />
-    <title>AR Namecard Hải Trạch</title>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.4/dist/mindar-image-three.prod.js"></script>
-    <style>
-      body {
-        margin: 0;
-        overflow: hidden;
-      }
-      canvas {
-        width: 100%;
-        height: 100%;
-        display: block;
-      }
-    </style>
+    <title>Hải Trạch AR</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar-nft.min.js"></script>
   </head>
-  <body>
-    <script type="module">
-      const mindarThree = new window.MINDAR.IMAGE.MindARThree({
-        container: document.body,
-        imageTargetSrc: './targets.mind', // Đảm bảo file này tên đúng
-      });
+  <body style="margin: 0; overflow: hidden">
+    <a-scene
+      embedded
+      arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
+    >
+      <!-- Tệp targets.mind + các file liên quan phải nằm cùng thư mục -->
+      <a-nft
+        type="mind"
+        url="targets.mind"
+        smooth="true"
+        smoothCount="10"
+        smoothTolerance="0.01"
+        smoothThreshold="5"
+      >
+        <!-- Hình xuất hiện khi nhận dạng marker -->
+        <a-image src="overlay.jpg" position="0 0 0" width="1" height="0.6"></a-image>
+      </a-nft>
 
-      const { renderer, scene, camera } = mindarThree;
-      const anchor = mindarThree.addAnchor(0);
-
-      const textureLoader = new THREE.TextureLoader();
-      const texture = textureLoader.load('./overlay.jpg'); // Hình overlay hiển thị AR
-
-      const geometry = new THREE.PlaneGeometry(1, 0.6); // Điều chỉnh tỷ lệ ảnh
-      const material = new THREE.MeshBasicMaterial({
-        map: texture,
-        transparent: true,
-      });
-
-      const plane = new THREE.Mesh(geometry, material);
-      anchor.group.add(plane);
-
-      const start = async () => {
-        await mindarThree.start();
-        renderer.setAnimationLoop(() => {
-          renderer.render(scene, camera);
-        });
-      };
-
-      start();
-    </script>
+      <a-entity camera></a-entity>
+    </a-scene>
   </body>
 </html>
